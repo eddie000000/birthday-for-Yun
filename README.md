@@ -1,4 +1,5 @@
 # 生日驚喜互動網站
+[生日驚喜互動網站](https://eddie000000.github.io/birthday-for-Yun/index.html)
 
 這是一個以 HTML、CSS、JavaScript 製作的生日祝福互動頁面，內容包含開場動畫、故事敘述、小測驗、相片牆、禮物選擇、吹蠟燭與結尾祝福。
 
@@ -15,6 +16,7 @@
 ## 執行方式
 
 這個專案使用 ES Module，需透過本機伺服器開啟，直接打開 index.html 可能會出現模組載入問題。
+
 
 ### 使用 Python
 
