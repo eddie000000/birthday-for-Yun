@@ -1,5 +1,5 @@
 /**
- * ???? ? ? config ???????
+ * 頁面流程控制。
  */
 
 import { SITE, SCENES, STORAGE_KEY } from "./config.js";
@@ -36,6 +36,7 @@ class SceneEngine {
     this.activeTypewriters = [];
     this.isTyping = false;
     this.sceneResolve = null;
+    this.currentGallery = null;
 
     this.loadProgress();
     this.bindGlobalEvents();
@@ -61,6 +62,32 @@ class SceneEngine {
         this.confettiCanvas.height = window.innerHeight;
       }
     });
+
+    window.addEventListener("keydown", (e) => this.handleKeydown(e));
+  }
+
+  handleKeydown(e) {
+    const key = e.key;
+
+    if (this.currentGallery && (key === "ArrowLeft" || key === "ArrowRight")) {
+      e.preventDefault();
+      if (key === "ArrowLeft") this.currentGallery.prev();
+      if (key === "ArrowRight") this.currentGallery.next();
+      return;
+    }
+
+    if (key === "Enter" || key === " " || key === "Spacebar") {
+      if (this.isTyping) {
+        e.preventDefault();
+        this.handleSkip();
+        return;
+      }
+
+      if (this.sceneResolve) {
+        e.preventDefault();
+        this.handleContinue();
+      }
+    }
   }
 
   loadProgress() {
@@ -100,7 +127,7 @@ class SceneEngine {
     this.btnSkip.classList.add("hidden");
   }
 
-  showContinue(text = "??") {
+  showContinue(text = "繼續") {
     this.btnContinue.textContent = text;
     this.btnContinue.classList.remove("hidden");
     this.btnSkip.classList.add("hidden");
@@ -150,9 +177,10 @@ class SceneEngine {
     this.container.innerHTML = "";
     this.hideButtons();
     this.activeTypewriters = [];
+    this.currentGallery = null;
   }
 
-  waitForContinue(text = "??") {
+  waitForContinue(text = "繼續") {
     return new Promise((resolve) => {
       this.sceneResolve = resolve;
       this.showContinue(text);
@@ -218,7 +246,7 @@ class SceneEngine {
     envelope.innerHTML = `
       <div class="envelope-flap"></div>
       <div class="envelope-body">
-        <span class="envelope-heart">??</span>
+        <span class="envelope-heart">💌</span>
       </div>
     `;
     wrap.appendChild(envelope);
@@ -253,7 +281,7 @@ class SceneEngine {
     imgWrap.className = "story-image-wrap hidden";
     const img = document.createElement("img");
     img.src = scene.image;
-    img.alt = scene.imageAlt || "????";
+    img.alt = scene.imageAlt || "回憶照片";
     img.className = "story-image";
     img.loading = "lazy";
     imgWrap.appendChild(img);
@@ -267,7 +295,7 @@ class SceneEngine {
     imgWrap.classList.remove("hidden");
     fadeIn(imgWrap);
 
-    await this.waitForContinue("???? ??");
+    await this.waitForContinue("下一頁");
     await this.nextScene();
   }
 
@@ -282,7 +310,7 @@ class SceneEngine {
     fadeIn(wrap);
 
     await typewriter(introEl, scene.intro);
-    await this.waitForContinue("???????");
+    await this.waitForContinue("開始答題");
 
     for (let qi = 0; qi < scene.questions.length; qi++) {
       const q = scene.questions[qi];
@@ -292,8 +320,8 @@ class SceneEngine {
     const doneEl = document.createElement("p");
     doneEl.className = "quiz-done";
     wrap.appendChild(doneEl);
-    await typewriter(doneEl, "??????????????? ??");
-    await this.waitForContinue("????? ??");
+    await typewriter(doneEl, "太厲害了，這一關也完成啦 💮");
+    await this.waitForContinue("繼續前進");
     await this.nextScene();
   }
 
@@ -388,9 +416,9 @@ class SceneEngine {
     const nav = document.createElement("div");
     nav.className = "gallery-nav";
     nav.innerHTML = `
-      <button type="button" class="gallery-arrow" id="gal-prev" aria-label="???">?</button>
+      <button type="button" class="gallery-arrow" id="gal-prev" aria-label="上一張">‹</button>
       <div class="gallery-dots" id="gal-dots"></div>
-      <button type="button" class="gallery-arrow" id="gal-next" aria-label="???">?</button>
+      <button type="button" class="gallery-arrow" id="gal-next" aria-label="下一張">›</button>
     `;
 
     wrap.appendChild(slider);
@@ -417,15 +445,20 @@ class SceneEngine {
       });
     };
 
-    nav.querySelector("#gal-prev").addEventListener("click", () => {
+    const prev = () => {
       current = (current - 1 + total) % total;
       updateSlide();
-    });
+    };
 
-    nav.querySelector("#gal-next").addEventListener("click", () => {
+    const next = () => {
       current = (current + 1) % total;
       updateSlide();
-    });
+    };
+
+    this.currentGallery = { prev, next };
+
+    nav.querySelector("#gal-prev").addEventListener("click", prev);
+    nav.querySelector("#gal-next").addEventListener("click", next);
 
     let touchStartX = 0;
     slider.addEventListener("touchstart", (e) => {
@@ -435,14 +468,15 @@ class SceneEngine {
     slider.addEventListener("touchend", (e) => {
       const diff = touchStartX - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 50) {
-        current = diff > 0
-          ? (current + 1) % total
-          : (current - 1 + total) % total;
-        updateSlide();
+        if (diff > 0) {
+          next();
+        } else {
+          prev();
+        }
       }
     }, { passive: true });
 
-    await this.waitForContinue("???? ?? ??");
+    await this.waitForContinue("看完了，下一頁");
     await this.nextScene();
   }
 
@@ -474,9 +508,10 @@ class SceneEngine {
         reveal.innerHTML = opt.reveal.replace(/\n/g, "<br>");
         wrap.appendChild(reveal);
         fadeIn(reveal);
+        startConfetti(this.confettiCanvas, 65);
 
-        await new Promise((r) => setTimeout(r, 2000));
-        await this.waitForContinue("?????? ???");
+        await new Promise((r) => setTimeout(r, 1800));
+        await this.waitForContinue("收下禮物");
         await this.nextScene();
       });
       giftsEl.appendChild(box);
@@ -504,7 +539,7 @@ class SceneEngine {
     cake.className = "cake hidden";
     cake.innerHTML = `
       <div class="candles-row" id="candles-row"></div>
-      <div class="cake-body">??</div>
+      <div class="cake-body">🎂</div>
     `;
     wrap.appendChild(cake);
 
@@ -523,20 +558,20 @@ class SceneEngine {
       const candle = document.createElement("button");
       candle.type = "button";
       candle.className = "candle lit";
-      candle.setAttribute("aria-label", `?? ${i + 1}`);
-      candle.innerHTML = `<span class="flame">??</span><span class="stick">|</span>`;
+      candle.setAttribute("aria-label", `第 ${i + 1} 根蠟燭`);
+      candle.innerHTML = `<span class="flame">🔥</span><span class="stick">|</span>`;
 
       candle.addEventListener("click", () => {
         if (!candle.classList.contains("lit")) return;
         candle.classList.remove("lit");
         candle.classList.add("out");
-        candle.querySelector(".flame").textContent = "??";
+        candle.querySelector(".flame").textContent = "✨";
         litCount--;
 
         if (litCount === 0) {
           setTimeout(async () => {
             startConfetti(this.confettiCanvas, 150);
-            await this.waitForContinue("??????????");
+            await this.waitForContinue("願望完成啦");
             await this.nextScene();
           }, 600);
         }
@@ -568,7 +603,7 @@ class SceneEngine {
     const restartBtn = document.createElement("button");
     restartBtn.type = "button";
     restartBtn.className = "btn btn-secondary finale-restart";
-    restartBtn.textContent = "???? ??";
+    restartBtn.textContent = "再看一次";
     restartBtn.addEventListener("click", () => {
       sessionStorage.removeItem(STORAGE_KEY);
       this.sceneIndex = 0;

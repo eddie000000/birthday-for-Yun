@@ -1,9 +1,14 @@
 /**
- * ?????????????????
+ * 共用動畫與小工具。
  */
 
 let confettiAnimId = null;
 let confettiParticles = [];
+
+const prefersReducedMotion =
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 export function interpolate(text, vars) {
   return text.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? `{${key}}`);
@@ -12,6 +17,13 @@ export function interpolate(text, vars) {
 export function typewriter(element, text, speed = 45) {
   return new Promise((resolve) => {
     element.textContent = "";
+
+    if (prefersReducedMotion) {
+      element.textContent = text;
+      resolve({ skip: () => {} });
+      return;
+    }
+
     let i = 0;
     let cancelled = false;
     let timerId = null;
@@ -43,6 +55,12 @@ export function skipAllTypewriters(results) {
 }
 
 export function fadeIn(element, duration = 400) {
+  if (prefersReducedMotion) {
+    element.style.opacity = "1";
+    element.style.transform = "translateY(0)";
+    return;
+  }
+
   element.style.opacity = "0";
   element.style.transform = "translateY(12px)";
   requestAnimationFrame(() => {
@@ -53,6 +71,10 @@ export function fadeIn(element, duration = 400) {
 }
 
 export function sceneTransition(container) {
+  if (prefersReducedMotion) {
+    return Promise.resolve();
+  }
+
   container.classList.add("scene-exit");
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -93,6 +115,12 @@ function drawConfetti(ctx, p) {
 }
 
 export function startConfetti(canvas, count = 120) {
+  if (prefersReducedMotion) {
+    canvas.classList.add("active");
+    setTimeout(() => stopConfetti(canvas), 250);
+    return;
+  }
+
   stopConfetti(canvas);
   const ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth;
@@ -142,7 +170,7 @@ export function stopConfetti(canvas) {
 }
 
 export function spawnFloatingHearts(container, count = 8) {
-  const emojis = ["??", "?", "??", "??", "?"];
+  const emojis = ["💖", "✨", "💌", "🎈", "🌷"];
   for (let i = 0; i < count; i++) {
     const el = document.createElement("span");
     el.className = "floating-heart";
