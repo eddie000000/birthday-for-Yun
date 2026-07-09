@@ -32,7 +32,7 @@ export const SCENES = [
       "從那天起，我的世界好像多了一種很溫柔的顏色。",
       "謝謝你，願意走進我的生活。",
     ],
-    image: "assets/images/memory-1.svg",
+    image: "assets/images/memory-1.jpg",
     imageAlt: "我們的回憶",
   },
   {
