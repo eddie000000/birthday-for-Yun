@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="一封給你的生日驚喜信">
+  <title>生日驚喜 💌</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <span class="chapter-label" id="chapter-label"></span>
+    </header>
+
+    <main class="scene-container" id="scene-container" role="main">
+      <!-- Scenes rendered by engine.js -->
+    </main>
+
+    <footer class="bottom-bar" id="bottom-bar">
+      <button type="button" class="btn btn-primary hidden" id="btn-continue">繼續</button>
+      <button type="button" class="btn btn-secondary hidden" id="btn-skip">跳過動畫</button>
+    </footer>
+  </div>
+
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <button type="button" class="music-toggle hidden" id="music-toggle" aria-label="播放背景音樂">
+    <span class="music-icon">🎵</span>
+  </button>
+
+  <audio id="bgm" loop preload="none">
+    <!-- Optional: add assets/audio/bgm.mp3 and uncomment -->
+    <!-- <source src="assets/audio/bgm.mp3" type="audio/mpeg"> -->
+  </audio>
+
+  <script type="module" src="js/engine.js"></script>
+</body>
+</html>
