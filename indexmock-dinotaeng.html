@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#F4EBDD">
+  <title>生日驚喜 Mockup - Dinotaeng Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4ebdd;
+      --panel: rgba(255, 250, 242, 0.82);
+      --panel-strong: rgba(255, 255, 255, 0.88);
+      --card: rgba(255, 251, 246, 0.92);
+      --cream: #fffaf2;
+      --butter: #ead7a4;
+      --butter-deep: #d6bd81;
+      --sage: #c8d3bf;
+      --rose: #e7c6bb;
+      --ink: #4f473d;
+      --muted: rgba(79, 71, 61, 0.72);
+      --line: rgba(79, 71, 61, 0.09);
+      --shadow: 0 16px 34px rgba(92, 74, 49, 0.08);
+      --radius: 26px;
+      --radius-sm: 16px;
+      --font: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 14%, rgba(255, 255, 255, 0.5), transparent 24%),
+        radial-gradient(circle at 84% 18%, rgba(234, 215, 164, 0.36), transparent 22%),
+        radial-gradient(circle at 50% 100%, rgba(200, 211, 191, 0.34), transparent 30%),
+        linear-gradient(180deg, #f7f0e4 0%, #f3e8d9 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(79, 71, 61, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 71, 61, 0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.55;
+    }
+
+    .frame {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: 0 16px;
+      position: relative;
+    }
+
+    .top-bar {
+      padding: 16px 0 8px;
+      flex-shrink: 0;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.62);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 64%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--butter), var(--sage));
+    }
+
+    .chapter-label {
+      display: block;
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .scene-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 0 24px;
+    }
+
+    .scene-card {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid rgba(79, 71, 61, 0.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .hero-media {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.9), transparent 34%),
+        linear-gradient(180deg, #fbf5eb 0%, #efe4d1 100%);
+      min-height: 320px;
+      box-shadow: inset 0 0 0 1px rgba(79, 71, 61, 0.04);
+    }
+
+    .hero-media::before {
+      content: "birthday story";
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      font-size: 0.76rem;
+      letter-spacing: 0.2em;
+      color: rgba(79, 71, 61, 0.42);
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 999px;
+      opacity: 0.9;
+    }
+
+    .blob.one {
+      width: 150px;
+      height: 98px;
+      left: 20px;
+      top: 86px;
+      background: rgba(234, 215, 164, 0.52);
+      transform: rotate(-8deg);
+    }
+
+    .blob.two {
+      width: 120px;
+      height: 82px;
+      right: 34px;
+      top: 118px;
+      background: rgba(200, 211, 191, 0.62);
+      transform: rotate(14deg);
+    }
+
+    .blob.three {
+      width: 138px;
+      height: 94px;
+      left: 46px;
+      bottom: 58px;
+      background: rgba(231, 198, 187, 0.7);
+      transform: rotate(10deg);
+    }
+
+    .postcard {
+      position: absolute;
+      right: 18px;
+      bottom: 20px;
+      width: 214px;
+      height: 156px;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(79, 71, 61, 0.08);
+      border-radius: 22px;
+      box-shadow: 0 14px 26px rgba(92, 74, 49, 0.08);
+      transform: rotate(-4deg);
+      overflow: hidden;
+    }
+
+    .stamp {
+      position: absolute;
+      left: 14px;
+      top: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #e9d7ad, #d6c39f);
+      display: grid;
+      place-items: center;
+      color: #fffaf2;
+      font-size: 1.2rem;
+    }
+
+    .postcard h2 {
+      position: absolute;
+      left: 72px;
+      top: 18px;
+      margin: 0;
+      font-size: 0.92rem;
+      letter-spacing: 0.12em;
+    }
+
+    .postcard p {
+      position: absolute;
+      left: 72px;
+      right: 14px;
+      top: 44px;
+      margin: 0;
+      font-size: 0.8rem;
+      line-height: 1.55;
+      color: rgba(79, 71, 61, 0.72);
+    }
+
+    .character {
+      position: absolute;
+      left: 22px;
+      bottom: 20px;
+      width: 146px;
+      height: 162px;
+    }
+
+    .head {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 82px;
+      height: 68px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(79, 71, 61, 0.06);
+    }
+
+    .ear {
+      position: absolute;
+      top: 10px;
+      width: 18px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(79, 71, 61, 0.06);
+    }
+
+    .ear.left { left: 8px; transform: rotate(-18deg); }
+    .ear.right { right: 8px; transform: rotate(18deg); }
+
+    .face {
+      position: absolute;
+      left: 50%;
+      top: 22px;
+      width: 42px;
+      height: 30px;
+      transform: translateX(-50%);
+    }
+
+    .eye {
+      position: absolute;
+      top: 8px;
+      width: 6px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--ink);
+    }
+
+    .eye.left { left: 8px; }
+    .eye.right { right: 8px; }
+
+    .mouth {
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      width: 10px;
+      height: 5px;
+      transform: translateX(-50%);
+      border-bottom: 2px solid rgba(79, 71, 61, 0.8);
+      border-radius: 0 0 999px 999px;
+    }
+
+    .body {
+      position: absolute;
+      left: 50%;
+      top: 54px;
+      width: 104px;
+      height: 92px;
+      transform: translateX(-50%);
+      border-radius: 42% 42% 40% 40%;
+      background: linear-gradient(180deg, #fff 0%, #f4ede2 100%);
+      border: 1px solid rgba(79, 71, 61, 0.06);
+    }
+
+    .arm {
+      position: absolute;
+      top: 64px;
+      width: 20px;
+      height: 52px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #fff 0%, #efe5d6 100%);
+      border: 1px solid rgba(79, 71, 61, 0.06);
+    }
+
+    .arm.left { left: 10px; transform: rotate(18deg); }
+    .arm.right { right: 10px; transform: rotate(-18deg); }
+
+    .tail {
+      position: absolute;
+      right: 8px;
+      bottom: 28px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(79, 71, 61, 0.06);
+    }
+
+    .music-toggle {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid rgba(79, 71, 61, 0.12);
+      background: rgba(255, 255, 255, 0.86);
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      font-size: 1.15rem;
+    }
+
+    .music-hint {
+      position: fixed;
+      right: 24px;
+      bottom: 80px;
+      max-width: min(260px, calc(100vw - 48px));
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(79, 71, 61, 0.08);
+      box-shadow: var(--shadow);
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .bottom-bar {
+      padding: 12px 0 24px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      border: 1px solid rgba(79, 71, 61, 0.08);
+      border-radius: 999px;
+      padding: 14px 18px;
+      min-width: 140px;
+      font: inherit;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--ink);
+      box-shadow: var(--shadow);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, var(--butter), #eedeb7);
+    }
+
+    @media (max-width: 520px) {
+      .frame { padding: 0 12px; }
+      .scene-card { padding: 14px; }
+      .hero-media { min-height: 300px; }
+      .postcard { width: 182px; height: 144px; }
+      .character { left: 14px; transform: scale(0.92); transform-origin: bottom left; }
+      .btn { min-width: 0; width: 100%; }
+      .bottom-bar { flex-direction: column; }
+      .music-toggle, .music-hint { right: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <header class="top-bar">
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill"></div>
+      </div>
+      <span class="chapter-label">Chapter 01 · Home / Hero</span>
+    </header>
+
+    <main class="scene-container" role="main" aria-live="polite">
+      <section class="scene-card">
+        <div class="hero-media">
+          <div class="blob one"></div>
+          <div class="blob two"></div>
+          <div class="blob three"></div>
+
+          <div class="postcard">
+            <div class="stamp">✿</div>
+            <h2>BIRTHDAY NOTE</h2>
+            <p>保留原本版型，但把視覺語言換成更像韓系品牌官網的奶油色、留白與紙感。</p>
+          </div>
+
+          <div class="character">
+            <div class="ear left"></div>
+            <div class="ear right"></div>
+            <div class="head"></div>
+            <div class="face">
+              <span class="eye left"></span>
+              <span class="eye right"></span>
+              <span class="mouth"></span>
+            </div>
+            <div class="arm left"></div>
+            <div class="arm right"></div>
+            <div class="body"></div>
+            <div class="tail"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bottom-bar">
+      <button type="button" class="btn primary">拆開信封</button>
+      <button type="button" class="btn">直接看完</button>
+    </footer>
+  </div>
+
+  <button type="button" class="music-toggle" aria-label="切換背景音樂">🎵</button>
+  <p class="music-hint">如果有聲音會更有驚喜感，點一下右下角可以開關音樂。</p>
+</body>
+</html>

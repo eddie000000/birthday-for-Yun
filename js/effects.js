@@ -14,7 +14,7 @@ export function interpolate(text, vars) {
   return text.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? `{${key}}`);
 }
 
-export function typewriter(element, text, speed = 45) {
+export function typewriter(element, text, speed = 65) {
   return new Promise((resolve) => {
     element.textContent = "";
 
