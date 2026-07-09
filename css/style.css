@@ -675,6 +675,15 @@ button:focus-visible {
   line-height: 1.5;
   z-index: 49;
   backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.music-hint.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 @media (min-width: 481px) {

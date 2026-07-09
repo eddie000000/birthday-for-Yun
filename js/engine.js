@@ -38,6 +38,7 @@ class SceneEngine {
     this.isTyping = false;
     this.sceneResolve = null;
     this.currentGallery = null;
+    this.musicHintTimer = null;
 
     this.loadProgress();
     this.bindGlobalEvents();
@@ -47,15 +48,12 @@ class SceneEngine {
   bindGlobalEvents() {
     this.btnContinue.addEventListener("click", () => this.handleContinue());
     this.btnSkip.addEventListener("click", () => this.handleSkip());
+    this.musicToggle.addEventListener("click", () => this.toggleMusic());
 
     this.container.addEventListener("click", (e) => {
       if (e.target.closest("button, .quiz-option, .gift-box, .candle, .gallery-nav")) return;
-      if (this.isTyping) {
-        this.handleSkip();
-      }
+      if (this.isTyping) this.handleSkip();
     });
-
-    this.musicToggle.addEventListener("click", () => this.toggleMusic());
 
     window.addEventListener("resize", () => {
       if (this.confettiCanvas.classList.contains("active")) {
@@ -70,10 +68,10 @@ class SceneEngine {
   showMusicHint(text) {
     if (!this.musicHint) return;
     this.musicHint.textContent = text;
-    this.musicHint.classList.remove("hidden");
     clearTimeout(this.musicHintTimer);
+    this.musicHint.classList.add("show");
     this.musicHintTimer = setTimeout(() => {
-      this.musicHint?.classList.add("hidden");
+      this.musicHint.classList.remove("show");
     }, 3000);
   }
 
@@ -106,9 +104,7 @@ class SceneEngine {
       const saved = sessionStorage.getItem(STORAGE_KEY);
       if (saved !== null) {
         const idx = parseInt(saved, 10);
-        if (idx >= 0 && idx < SCENES.length) {
-          this.sceneIndex = idx;
-        }
+        if (idx >= 0 && idx < SCENES.length) this.sceneIndex = idx;
       }
     } catch {
       /* ignore */
@@ -222,7 +218,6 @@ class SceneEngine {
     this.clearContainer();
     this.updateProgress();
     const scene = this.currentScene;
-
     switch (scene.type) {
       case "intro":
         await this.renderIntro(scene);
@@ -251,7 +246,6 @@ class SceneEngine {
   async renderIntro(scene) {
     const wrap = document.createElement("div");
     wrap.className = "scene-intro";
-
     const envelope = document.createElement("div");
     envelope.className = "envelope";
     envelope.innerHTML = `
@@ -261,21 +255,13 @@ class SceneEngine {
       </div>
     `;
     wrap.appendChild(envelope);
-
     const textBox = document.createElement("div");
     textBox.className = "text-box";
     wrap.appendChild(textBox);
-
     this.container.appendChild(wrap);
     fadeIn(wrap);
-
     await this.renderLines(scene.lines, textBox);
-
-    this.btnContinue.textContent = scene.cta;
-    this.btnContinue.classList.remove("hidden");
-
     await this.waitForContinue(scene.cta);
-
     await playEnvelopeOpen(envelope);
     await this.nextScene();
   }
@@ -283,11 +269,9 @@ class SceneEngine {
   async renderStory(scene) {
     const wrap = document.createElement("div");
     wrap.className = "scene-story";
-
     const textBox = document.createElement("div");
     textBox.className = "text-box";
     wrap.appendChild(textBox);
-
     const imgWrap = document.createElement("div");
     imgWrap.className = "story-image-wrap hidden";
     const img = document.createElement("img");
@@ -297,15 +281,11 @@ class SceneEngine {
     img.loading = "lazy";
     imgWrap.appendChild(img);
     wrap.appendChild(imgWrap);
-
     this.container.appendChild(wrap);
     fadeIn(wrap);
-
     await this.renderLines(scene.lines, textBox);
-
     imgWrap.classList.remove("hidden");
     fadeIn(imgWrap);
-
     await this.waitForContinue("下一頁");
     await this.nextScene();
   }
@@ -313,21 +293,16 @@ class SceneEngine {
   async renderQuiz(scene) {
     const wrap = document.createElement("div");
     wrap.className = "scene-quiz";
-
     const introEl = document.createElement("p");
     introEl.className = "quiz-intro";
     wrap.appendChild(introEl);
     this.container.appendChild(wrap);
     fadeIn(wrap);
-
     await typewriter(introEl, scene.intro);
     await this.waitForContinue("開始答題");
-
     for (let qi = 0; qi < scene.questions.length; qi++) {
-      const q = scene.questions[qi];
-      await this.renderQuizQuestion(wrap, q, qi + 1, scene.questions.length);
+      await this.renderQuizQuestion(wrap, scene.questions[qi], qi + 1, scene.questions.length);
     }
-
     const doneEl = document.createElement("p");
     doneEl.className = "quiz-done";
     wrap.appendChild(doneEl);
@@ -340,49 +315,36 @@ class SceneEngine {
     return new Promise((resolve) => {
       const block = document.createElement("div");
       block.className = "quiz-block";
-
       const qEl = document.createElement("p");
       qEl.className = "quiz-question";
       qEl.textContent = `(${num}/${total}) ${question.text}`;
       block.appendChild(qEl);
-
       const optsEl = document.createElement("div");
       optsEl.className = "quiz-options";
-
       const feedbackEl = document.createElement("p");
       feedbackEl.className = "quiz-feedback hidden";
-
       let answered = false;
-
       question.options.forEach((opt, idx) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "quiz-option";
         btn.textContent = opt;
-        btn.addEventListener("click", async () => {
+        btn.addEventListener("click", () => {
           if (answered) return;
           answered = true;
-
-          const isCorrect =
-            question.correct === -1 || idx === question.correct;
+          const isCorrect = question.correct === -1 || idx === question.correct;
           btn.classList.add(isCorrect ? "correct" : "wrong");
-
           feedbackEl.classList.remove("hidden");
-          feedbackEl.textContent = isCorrect
-            ? question.feedback.correct
-            : question.feedback.wrong;
-
+          feedbackEl.textContent = isCorrect ? question.feedback.correct : question.feedback.wrong;
           if (!isCorrect && question.correct !== -1) {
             optsEl.querySelectorAll(".quiz-option").forEach((b, i) => {
               if (i === question.correct) b.classList.add("correct");
             });
           }
-
           setTimeout(() => resolve(), 1800);
         });
         optsEl.appendChild(btn);
       });
-
       block.appendChild(optsEl);
       block.appendChild(feedbackEl);
       wrap.appendChild(block);
@@ -393,37 +355,28 @@ class SceneEngine {
   async renderGallery(scene) {
     const wrap = document.createElement("div");
     wrap.className = "scene-gallery";
-
     const introEl = document.createElement("p");
     introEl.className = "gallery-intro";
     wrap.appendChild(introEl);
-
     const slider = document.createElement("div");
     slider.className = "gallery-slider";
-
     const track = document.createElement("div");
     track.className = "gallery-track";
-
     scene.items.forEach((item) => {
       const slide = document.createElement("div");
       slide.className = "gallery-slide";
-
       const img = document.createElement("img");
       img.src = item.image;
       img.alt = item.caption;
       img.loading = "lazy";
-
       const cap = document.createElement("p");
       cap.className = "gallery-caption";
       cap.textContent = item.caption;
-
       slide.appendChild(img);
       slide.appendChild(cap);
       track.appendChild(slide);
     });
-
     slider.appendChild(track);
-
     const nav = document.createElement("div");
     nav.className = "gallery-nav";
     nav.innerHTML = `
@@ -431,62 +384,38 @@ class SceneEngine {
       <div class="gallery-dots" id="gal-dots"></div>
       <button type="button" class="gallery-arrow" id="gal-next" aria-label="下一張">›</button>
     `;
-
     wrap.appendChild(slider);
     wrap.appendChild(nav);
     this.container.appendChild(wrap);
     fadeIn(wrap);
-
     await typewriter(introEl, scene.intro);
-
     let current = 0;
     const total = scene.items.length;
     const dotsEl = nav.querySelector("#gal-dots");
-
     scene.items.forEach((_, i) => {
       const dot = document.createElement("span");
       dot.className = `gallery-dot${i === 0 ? " active" : ""}`;
       dotsEl.appendChild(dot);
     });
-
     const updateSlide = () => {
       track.style.transform = `translateX(-${current * 100}%)`;
       dotsEl.querySelectorAll(".gallery-dot").forEach((d, i) => {
         d.classList.toggle("active", i === current);
       });
     };
-
-    const prev = () => {
-      current = (current - 1 + total) % total;
-      updateSlide();
-    };
-
-    const next = () => {
-      current = (current + 1) % total;
-      updateSlide();
-    };
-
+    const prev = () => { current = (current - 1 + total) % total; updateSlide(); };
+    const next = () => { current = (current + 1) % total; updateSlide(); };
     this.currentGallery = { prev, next };
-
     nav.querySelector("#gal-prev").addEventListener("click", prev);
     nav.querySelector("#gal-next").addEventListener("click", next);
-
     let touchStartX = 0;
-    slider.addEventListener("touchstart", (e) => {
-      touchStartX = e.touches[0].clientX;
-    }, { passive: true });
-
+    slider.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
     slider.addEventListener("touchend", (e) => {
       const diff = touchStartX - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          next();
-        } else {
-          prev();
-        }
+        if (diff > 0) next(); else prev();
       }
     }, { passive: true });
-
     await this.waitForContinue("看完了，下一頁");
     await this.nextScene();
   }
@@ -494,46 +423,35 @@ class SceneEngine {
   async renderChoice(scene) {
     const wrap = document.createElement("div");
     wrap.className = "scene-choice";
-
     const textBox = document.createElement("div");
     textBox.className = "text-box";
     wrap.appendChild(textBox);
-
     const giftsEl = document.createElement("div");
     giftsEl.className = "gift-grid hidden";
-
     scene.options.forEach((opt) => {
       const box = document.createElement("button");
       box.type = "button";
       box.className = "gift-box";
-      box.innerHTML = `
-        <span class="gift-emoji">${opt.emoji}</span>
-        <span class="gift-label">${opt.label}</span>
-      `;
+      box.innerHTML = `<span class="gift-emoji">${opt.emoji}</span><span class="gift-label">${opt.label}</span>`;
       box.addEventListener("click", async () => {
         giftsEl.querySelectorAll(".gift-box").forEach((b) => { b.disabled = true; });
         box.classList.add("selected");
-
         const reveal = document.createElement("div");
         reveal.className = "gift-reveal";
         reveal.innerHTML = opt.reveal.replace(/\n/g, "<br>");
         wrap.appendChild(reveal);
         fadeIn(reveal);
         startConfetti(this.confettiCanvas, 65);
-
         await new Promise((r) => setTimeout(r, 1800));
         await this.waitForContinue("收下禮物");
         await this.nextScene();
       });
       giftsEl.appendChild(box);
     });
-
     wrap.appendChild(giftsEl);
     this.container.appendChild(wrap);
     fadeIn(wrap);
-
     await this.renderLines(scene.lines, textBox);
-
     giftsEl.classList.remove("hidden");
     fadeIn(giftsEl);
   }
@@ -541,11 +459,9 @@ class SceneEngine {
   async renderCandle(scene) {
     const wrap = document.createElement("div");
     wrap.className = "scene-candle";
-
     const textBox = document.createElement("div");
     textBox.className = "text-box";
     wrap.appendChild(textBox);
-
     const cake = document.createElement("div");
     cake.className = "cake hidden";
     cake.innerHTML = `
@@ -553,32 +469,25 @@ class SceneEngine {
       <div class="cake-body">🎂</div>
     `;
     wrap.appendChild(cake);
-
     this.container.appendChild(wrap);
     fadeIn(wrap);
-
     await this.renderLines(scene.lines, textBox);
-
     cake.classList.remove("hidden");
     fadeIn(cake);
-
     const row = cake.querySelector("#candles-row");
     let litCount = scene.candleCount;
-
     for (let i = 0; i < scene.candleCount; i++) {
       const candle = document.createElement("button");
       candle.type = "button";
       candle.className = "candle lit";
       candle.setAttribute("aria-label", `第 ${i + 1} 根蠟燭`);
       candle.innerHTML = `<span class="flame">🔥</span><span class="stick">|</span>`;
-
       candle.addEventListener("click", () => {
         if (!candle.classList.contains("lit")) return;
         candle.classList.remove("lit");
         candle.classList.add("out");
         candle.querySelector(".flame").textContent = "✨";
         litCount--;
-
         if (litCount === 0) {
           setTimeout(async () => {
             startConfetti(this.confettiCanvas, 150);
@@ -587,7 +496,6 @@ class SceneEngine {
           }, 600);
         }
       });
-
       row.appendChild(candle);
     }
   }
@@ -595,22 +503,14 @@ class SceneEngine {
   async renderFinale(scene) {
     const wrap = document.createElement("div");
     wrap.className = "scene-finale";
-
     spawnFloatingHearts(wrap, 10);
-
     const textBox = document.createElement("div");
     textBox.className = "text-box finale-text";
     wrap.appendChild(textBox);
-
     this.container.appendChild(wrap);
     fadeIn(wrap);
-
     startConfetti(this.confettiCanvas, 100);
-
     await this.renderLines(scene.lines, textBox);
-
-    this.musicToggle.classList.remove("hidden");
-
     const restartBtn = document.createElement("button");
     restartBtn.type = "button";
     restartBtn.className = "btn btn-secondary finale-restart";
@@ -622,27 +522,35 @@ class SceneEngine {
       this.renderScene();
     });
     wrap.appendChild(restartBtn);
-
     this.btnContinue.classList.add("hidden");
   }
 
   toggleMusic() {
-    if (this.bgm.src || this.bgm.querySelector("source")) {
-      if (this.bgm.paused) {
-        this.bgm.play().then(() => {
+    const hasSource = Boolean(this.bgm.src || this.bgm.querySelector("source"));
+    if (!hasSource) {
+      this.showMusicHint("還沒有放入背景音樂檔，請把音檔放到 `assets/audio/bgm.mp3`。");
+      return;
+    }
+
+    if (this.bgm.paused) {
+      const playResult = this.bgm.play();
+      if (playResult && typeof playResult.then === "function") {
+        playResult.then(() => {
           this.musicToggle.classList.add("playing");
           this.showMusicHint("音樂已開啟，祝你們的生日回憶更浪漫一點。");
         }).catch(() => {
-          this.showMusicHint("裝置可能先擋住了自動播放，請再點一次，或先把手機音量打開。");
+          this.showMusicHint("裝置可能先擋住了播放，請再點一次，或先把手機音量打開。");
         });
       } else {
-        this.bgm.pause();
-        this.musicToggle.classList.remove("playing");
-        this.showMusicHint("音樂已暫停，隨時都可以再打開。");
+        this.musicToggle.classList.add("playing");
+        this.showMusicHint("音樂已開啟，祝你們的生日回憶更浪漫一點。");
       }
-    } else {
-      this.showMusicHint("還沒有放入背景音樂檔，請把音檔放到 `assets/audio/bgm.mp3`。");
+      return;
     }
+
+    this.bgm.pause();
+    this.musicToggle.classList.remove("playing");
+    this.showMusicHint("音樂已暫停，隨時都可以再打開。");
   }
 }
 
