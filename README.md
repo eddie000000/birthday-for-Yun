@@ -43,6 +43,7 @@ image: "assets/images/memory-1.svg",
 
 1. 把音樂檔放進 `assets/audio/`。
 2. 到 [index.html](index.html) 解除註解 `<source>` 那一行。
+3. 右下角的音樂按鈕可隨時開關，第一次播放時也會顯示提示。
 
 ## 本機預覽
 

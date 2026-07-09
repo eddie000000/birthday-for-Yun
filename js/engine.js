@@ -31,6 +31,7 @@ class SceneEngine {
     this.btnSkip = document.getElementById("btn-skip");
     this.confettiCanvas = document.getElementById("confetti-canvas");
     this.musicToggle = document.getElementById("music-toggle");
+    this.musicHint = document.getElementById("music-hint");
     this.bgm = document.getElementById("bgm");
 
     this.activeTypewriters = [];
@@ -64,6 +65,16 @@ class SceneEngine {
     });
 
     window.addEventListener("keydown", (e) => this.handleKeydown(e));
+  }
+
+  showMusicHint(text) {
+    if (!this.musicHint) return;
+    this.musicHint.textContent = text;
+    this.musicHint.classList.remove("hidden");
+    clearTimeout(this.musicHintTimer);
+    this.musicHintTimer = setTimeout(() => {
+      this.musicHint?.classList.add("hidden");
+    }, 3000);
   }
 
   handleKeydown(e) {
@@ -618,12 +629,19 @@ class SceneEngine {
   toggleMusic() {
     if (this.bgm.src || this.bgm.querySelector("source")) {
       if (this.bgm.paused) {
-        this.bgm.play().catch(() => {});
-        this.musicToggle.classList.add("playing");
+        this.bgm.play().then(() => {
+          this.musicToggle.classList.add("playing");
+          this.showMusicHint("音樂已開啟，祝你們的生日回憶更浪漫一點。");
+        }).catch(() => {
+          this.showMusicHint("裝置可能先擋住了自動播放，請再點一次，或先把手機音量打開。");
+        });
       } else {
         this.bgm.pause();
         this.musicToggle.classList.remove("playing");
+        this.showMusicHint("音樂已暫停，隨時都可以再打開。");
       }
+    } else {
+      this.showMusicHint("還沒有放入背景音樂檔，請把音檔放到 `assets/audio/bgm.mp3`。");
     }
   }
 }
