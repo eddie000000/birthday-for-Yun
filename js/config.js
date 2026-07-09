@@ -3,9 +3,9 @@
  */
 
 export const SITE = {
-  herName: "小寶",
-  yourName: "我",
-  birthdayDate: "7月9日",
+  herName: "筠筠寶貝",
+  yourName: "騰騰",
+  birthdayDate: "8月2日",
   title: "生日驚喜 💌",
 };
 
@@ -16,7 +16,7 @@ export const SCENES = [
     chapterLabel: "序章",
     lines: [
       "嗨，{herName}～",
-      "今天 {birthdayDate} 是你的主場，先把掌聲收下 ✨",
+      "今天 {birthdayDate} 是你的日子，先把掌聲收下 ✨",
       "我偷偷準備了一封只屬於你的生日信…",
       "準備好一起打開了嗎？",
     ],
@@ -105,7 +105,7 @@ export const SCENES = [
         reveal: "「無限擁抱券」一張！\n隨時可用，永遠有效 🤗",
       },
       {
-        label: "💜 綁色禮盒",
+        label: "💜 紫色禮盒",
         emoji: "💜",
         reveal: "「專屬約會券」一張！\n地點你定，我買單 🍽️",
       },
