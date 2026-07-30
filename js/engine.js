@@ -306,7 +306,7 @@ class SceneEngine {
     const doneEl = document.createElement("p");
     doneEl.className = "quiz-done";
     wrap.appendChild(doneEl);
-    await typewriter(doneEl, "不愧是筠筠，很了哦 💮");
+    await typewriter(doneEl, "不愧是筠筠，很了哦 🥰");
     await this.waitForContinue("繼續前進");
     await this.nextScene();
   }

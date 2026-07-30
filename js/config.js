@@ -73,15 +73,15 @@ export const SCENES = [
   {
     id: "gallery",
     type: "gallery",
-    chapterLabel: "第三章 · 回憶相冊",
-    intro: "翻一翻我們的小相冊吧 📸",
+    chapterLabel: "第三章 · 回憶相簿",
+    intro: "翻一翻我們的回憶相簿吧 📸",
     items: [
       {
         image: "assets/images/lugun.JPG",
         caption: "第一次鹿港行，粗了很多好粗的",
       },
       {
-        image: "assets/images/memory-3.svg",
+        image: "assets/images/tainana.png",
         caption: "第二次跨縣市到台南玩，玩得好累~",
       },
       {
@@ -111,12 +111,12 @@ export const SCENES = [
       {
         label: "💜 紫色禮盒",
         emoji: "💜",
-        reveal: "「楓之谷遊玩券」一張！\n我們一起去打電動～ 🎮",
+        reveal: "「電動遊樂券」一張！\n我們一起去打電動～ 🎮",
       },
       {
         label: "⭐ 星星禮盒",
         emoji: "⭐",
-        reveal: "「永遠陪伴承諾」一份！\n不管發生什麼，我都在 💫",
+        reveal: "「永遠陪伴券」一張！\n不管發生什麼，我都在你身邊 💕",
       },
     ],
   },
@@ -146,6 +146,8 @@ export const SCENES = [
       "能一樣開開心心的過",
       "所有願望都慢慢實現，",
       "我，會一直在你身邊。",
+      "",
+      "這特別的一天即將畫下句點。",
       "",
       "Love,",
       "{yourName} 💕",
