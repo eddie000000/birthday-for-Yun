@@ -39,9 +39,11 @@ class SceneEngine {
     this.sceneResolve = null;
     this.currentGallery = null;
     this.musicHintTimer = null;
+    this.musicAutoplayAttempted = false;
 
     this.loadProgress();
     this.bindGlobalEvents();
+    this.initMusicAutoplay();
     this.renderScene();
   }
 
@@ -51,6 +53,7 @@ class SceneEngine {
     this.musicToggle.addEventListener("click", () => this.toggleMusic());
 
     this.container.addEventListener("click", (e) => {
+      this.tryStartMusic({ showHint: false });
       if (e.target.closest("button, .quiz-option, .gift-box, .candle, .gallery-nav")) return;
       if (this.isTyping) this.handleSkip();
     });
@@ -62,7 +65,53 @@ class SceneEngine {
       }
     });
 
-    window.addEventListener("keydown", (e) => this.handleKeydown(e));
+    window.addEventListener("keydown", (e) => {
+      this.tryStartMusic({ showHint: false });
+      this.handleKeydown(e);
+    });
+  }
+
+  initMusicAutoplay() {
+    this.tryStartMusic({ showHint: true });
+
+    const unlockPlayback = () => {
+      this.tryStartMusic({ showHint: false });
+    };
+
+    document.addEventListener("pointerdown", unlockPlayback, { once: true, capture: true });
+    document.addEventListener("touchstart", unlockPlayback, { once: true, capture: true });
+    document.addEventListener("keydown", unlockPlayback, { once: true, capture: true });
+  }
+
+  async tryStartMusic({ showHint = false } = {}) {
+    if (this.musicAutoplayAttempted) return;
+
+    const hasSource = Boolean(this.bgm.src || this.bgm.querySelector("source"));
+    if (!hasSource) {
+      if (showHint) {
+        this.showMusicHint("還沒有放入背景音樂檔，請把音檔放到 assets/audio/bgm.m4a。");
+      }
+      return;
+    }
+
+    this.musicAutoplayAttempted = true;
+
+    if (this.bgm.paused) {
+      try {
+        await this.bgm.play();
+        this.musicToggle.classList.add("playing");
+        if (showHint) {
+          this.showMusicHint("音樂已自動開啟，祝你們的生日回憶更浪漫一點。");
+        }
+      } catch {
+        this.musicToggle.classList.remove("playing");
+        if (showHint) {
+          this.showMusicHint("手機瀏覽器可能先擋住自動播放，點一下畫面就能開啟音樂。");
+        }
+      }
+    } else {
+      this.musicToggle.classList.add("playing");
+    }
   }
 
   showMusicHint(text) {
@@ -525,25 +574,20 @@ class SceneEngine {
     this.btnContinue.classList.add("hidden");
   }
 
-  toggleMusic() {
+  async toggleMusic() {
     const hasSource = Boolean(this.bgm.src || this.bgm.querySelector("source"));
     if (!hasSource) {
-      this.showMusicHint("還沒有放入背景音樂檔，請把音檔放到 `assets/audio/bgm.mp3`。");
+      this.showMusicHint("還沒有放入背景音樂檔，請把音檔放到 assets/audio/bgm.m4a。");
       return;
     }
 
     if (this.bgm.paused) {
-      const playResult = this.bgm.play();
-      if (playResult && typeof playResult.then === "function") {
-        playResult.then(() => {
-          this.musicToggle.classList.add("playing");
-          this.showMusicHint("音樂已開啟，祝你們的生日回憶更浪漫一點。");
-        }).catch(() => {
-          this.showMusicHint("裝置可能先擋住了播放，請再點一次，或先把手機音量打開。");
-        });
-      } else {
+      try {
+        await this.bgm.play();
         this.musicToggle.classList.add("playing");
         this.showMusicHint("音樂已開啟，祝你們的生日回憶更浪漫一點。");
+      } catch {
+        this.showMusicHint("裝置可能先擋住了播放，請再點一次，或先把手機音量打開。");
       }
       return;
     }
