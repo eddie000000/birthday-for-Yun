@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFCF6">
+<title>冬日東京小旅行｜2026.12.13–12.17</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Huninn&display=swap" rel="stylesheet">
+
+<script>
+/* =====================================================================
+   ✏️ 行程資料：要改行程，只改這一段就好
+   ---------------------------------------------------------------------
+   ・每日行程 days[].items 的每一筆：
+       start / end  開始、結束時間（"HH:MM"，end 可留空 ""）
+       stay         停留多久（可留空）
+       place        地點／標題
+       tags         交通標籤（見下方 TAGS）。有 tags 的那筆會顯示成「交通段」，
+                    沒有 tags（[] 或不寫）會顯示成「景點／活動卡片」
+       how          怎麼去／細節（可留空）
+       cost         費用（可留空），例如 "¥2,580／人"
+       note         備註（可留空）
+       must: true   標「必去」
+       optional: true 標「可選」
+   ・新增一天：複製一整個 { date: ..., items: [...] } 區塊即可
+   ・貼圖檔都在 travelsticker/ 資料夾
+   ===================================================================== */
+
+/* 交通標籤：key 用在 items 的 tags 裡，可自行新增 */
+const TAGS = {
+  plane:    { label: "飛機",     icon: "✈️", color: "#A8D3E6" },
+  skyliner: { label: "Skyliner", icon: "🚄", color: "#F2A497" },
+  jr:       { label: "JR",       icon: "🚃", color: "#B9DAA5" },
+  metro:    { label: "地鐵",     icon: "🚇", color: "#F6D27A" },
+  tobu:     { label: "東武線",   icon: "🚃", color: "#F8CFC7" },
+  car:      { label: "開車",     icon: "🚗", color: "#D4EAF3" },
+  walk:     { label: "步行",     icon: "👟", color: "#FFFCF6" },
+};
+
+const TRIP = {
+  title: "冬日東京小旅行",
+  subtitle: "臺中 ⇄ 東京・5 天 4 夜",
+  dateText: "2026.12.13（日）– 12.17（四）",
+  departAt: "2026-12-13T09:15:00+08:00",   // 倒數到這個時間
+  returnAt: "2026-12-17T17:55:00+08:00",   // 過了這個時間顯示「旅程結束」
+
+  flights: [
+    {
+      label: "去程", date: "12/13（日）", airline: "星宇航空", no: "JX 314", aircraft: "A321neo",
+      from: { code: "RMQ", city: "臺中", time: "09:15", terminal: "第 2 航廈" },
+      to:   { code: "NRT", city: "成田", time: "13:25", terminal: "第 2 航廈" },
+      duration: "3 小時 10 分", seat: "坐左側", color: "#A8D3E6",
+    },
+    {
+      label: "回程", date: "12/17（四）", airline: "星宇航空", no: "JX 315", aircraft: "",
+      from: { code: "NRT", city: "成田", time: "14:25", terminal: "第 2 航廈" },
+      to:   { code: "RMQ", city: "臺中", time: "17:55", terminal: "第 2 航廈" },
+      duration: "3 小時 30 分", seat: "坐右側，天氣好看得到富士山", color: "#F2A497",
+    },
+  ],
+  flightPrice: "$16,988／人（來回）",
+
+  hotel: {
+    name: "The Barn Tokyo",
+    checkIn:  { date: "12/13（日）", time: "15:00 後" },
+    checkOut: { date: "12/17（四）", time: "11:00 前" },
+    nights: "4 晚",
+    address: "3 Chome-12-16 Negishi, Taito City, Tokyo 110-0003",
+    addressZh: "台東區根岸 3-12-16",
+    phone: "+819046757106",
+    website: "https://thebarntokyo.com/",
+    station: "JR 鶯谷站北口步行 4 分／日暮里步行約 12 分",
+    price: "$12,947（4 晚・2 人）≈ $1,618／人每晚",
+  },
+  totalCost: "機＋酒合計 $23,460／人",
+
+  days: [
+    {
+      date: "12/13", week: "日", title: "成田 → 飯店 → 阿美橫町",
+      sticker: "07_691386583.png",
+      items: [
+        { start: "06:40", end: "07:10", stay: "30 分", place: "筠筠家 → 臺中機場第 2 航廈", tags: ["car"], how: "開車或 Uber，約 30 分", cost: "車資另計", note: "09:15 的班機，07:10 到機場大約提早 2 小時。可先線上報到。" },
+        { start: "07:10", end: "09:15", stay: "2 小時", place: "臺中機場候機", how: "星宇櫃檯、安檢", note: "去程坐左側。" },
+        { start: "09:15", end: "13:25", stay: "3 小時 10 分", place: "臺中 → 成田第 2 航廈", tags: ["plane"], how: "星宇 JX314　A321neo", cost: "$16,988／人", note: "目前兩端都在第 2 航廈，登機證再對一次。" },
+        { start: "13:25", end: "14:45", stay: "80 分", place: "入境、提行李、走到 Skyliner", tags: ["walk"], how: "成田第 2 航廈內", note: "預留 80 分。若較早放行，改搭早一班。" },
+        { start: "15:02", end: "15:38", stay: "36 分", place: "成田第 2 航廈 → 日暮里", tags: ["skyliner"], how: "Skyliner 40 號，中途不停", cost: "¥2,580／人", note: "星期日時刻。若 14:40 已在月台，改搭 14:42 的 38 號（15:18 到）。指定席要買券，不能只刷西瓜卡。" },
+        { start: "15:38", end: "16:00", stay: "20 分", place: "日暮里 → The Barn Tokyo", tags: ["jr", "walk"], how: "山手線外迴 1 站到鶯谷北口，步行 4 分。或從日暮里直走約 12 分。", cost: "Suica 實扣", note: "15:00 後可入住。" },
+        { start: "16:00", end: "17:15", stay: "75 分", place: "飯店放行李、休息", note: "第一天不排景點。" },
+        { start: "17:15", end: "17:35", stay: "20 分", place: "飯店 → 阿美橫町", tags: ["walk", "jr"], how: "步行約 15–20 分，或鶯谷搭 1 站到御徒町／上野" },
+        { start: "17:35", end: "19:30", stay: "約 2 小時", place: "阿美橫町逛街、吃晚餐", must: true, note: "攤商多在 19:00–20:00 收，17:15 出門才看得到店。" },
+        { start: "19:30", end: "20:00", stay: "30 分", place: "回 The Barn Tokyo", tags: ["walk", "jr"], how: "原路步行，或山手線回鶯谷北口", note: "明天 07:15 出門，早點休息。" },
+      ],
+    },
+    {
+      date: "12/14", week: "一", title: "東京迪士尼樂園",
+      sticker: "02_829258314.png",
+      items: [
+        { start: "07:15", end: "08:25", stay: "70 分", place: "飯店 → 迪士尼樂園正門", tags: ["walk", "jr"], how: "鶯谷 → 山手線外迴到東京站（約 10 分）→ 京葉線到舞濱（約 15 分）→ 步行約 10 分", cost: "Suica 實扣", note: "東京站轉京葉線月台很深，轉車留 10 分。" },
+        { start: "08:25", end: "09:00", stay: "35 分", place: "開園前在正門等候", note: "12 月中旬多為 9:00–21:00，以官方日曆為準。這天在聖誕活動期間。" },
+        { start: "09:00", end: "21:00", stay: "12 小時", place: "東京迪士尼樂園", must: true, how: "園內步行", cost: "票價見官方當日", note: "聖誕煙火約 20:30，看完再離園。一日券尚未訂，平日聖誕也會滿，先買！" },
+        { start: "21:00", end: "22:20", stay: "80 分", place: "回 The Barn Tokyo", tags: ["jr", "walk"], how: "舞濱 → 京葉線到東京 → 山手線到鶯谷北口 → 步行 4 分", cost: "Suica 實扣" },
+      ],
+    },
+    {
+      date: "12/15", week: "二", title: "上野公園 → 淺草 → 晴空塔",
+      sticker: "07_556180740.png",
+      items: [
+        { start: "08:30", end: "08:45", stay: "15 分", place: "飯店 → 上野公園", tags: ["walk", "jr"], how: "步行約 15 分，或鶯谷搭山手線 1 站到上野" },
+        { start: "08:45", end: "11:15", stay: "2.5 小時", place: "上野公園", note: "回程早上沒時間買伴手禮，旁邊的阿美橫町可以順路買。" },
+        { start: "11:15", end: "11:45", stay: "30 分", place: "上野 → 淺草", tags: ["metro"], how: "銀座線 3 站約 8 分", cost: "Suica 實扣" },
+        { start: "11:45", end: "12:30", stay: "45 分", place: "淺草和服體驗", optional: true, cost: "依店家", note: "不穿就直接去仲見世。若要穿去晴空塔，選能在晴空塔歸還的方案。" },
+        { start: "12:30", end: "14:30", stay: "2 小時", place: "淺草寺、仲見世通、午餐", must: true },
+        { start: "14:30", end: "14:50", stay: "20 分", place: "淺草 → 東京晴空塔", tags: ["tobu"], how: "東武晴空塔線 1 站約 5 分", cost: "Suica 實扣" },
+        { start: "14:50", end: "18:00", stay: "3 小時", place: "晴空塔展望台、Solamachi", must: true, cost: "門票另購", note: "12 月日落早，約 15:30 的時段可以從白天看到夜景。" },
+        { start: "18:00", end: "19:30", stay: "90 分", place: "晚餐（晴空塔或淺草）" },
+        { start: "19:30", end: "20:15", stay: "45 分", place: "回 The Barn Tokyo", tags: ["tobu", "metro", "jr"], how: "東武回淺草 → 銀座線到上野 → 山手線到鶯谷", cost: "Suica 實扣" },
+      ],
+    },
+    {
+      date: "12/16", week: "三", title: "明治神宮 → 原宿 → 澀谷 → 新宿",
+      sticker: "10_556180743.png",
+      items: [
+        { start: "08:15", end: "08:50", stay: "35 分", place: "飯店 → 原宿", tags: ["jr"], how: "鶯谷北口搭山手線內迴到原宿，全程約 30 分", cost: "Suica 實扣", note: "先到最西邊，之後一路往新宿，晚上直接坐回鶯谷。" },
+        { start: "08:50", end: "10:10", stay: "80 分", place: "明治神宮", must: true, how: "由原宿站步行進入", cost: "免費", note: "早上人比較少。" },
+        { start: "10:10", end: "11:00", stay: "50 分", place: "竹下通", note: "Laforet 約 11:00 開門，先逛竹下通。" },
+        { start: "11:00", end: "12:30", stay: "90 分", place: "Laforet", must: true, how: "原宿、表參道這一側", note: "購物清單上的店，營業時間出發前再確認。" },
+        { start: "12:30", end: "13:20", stay: "50 分", place: "午餐（原宿）" },
+        { start: "13:20", end: "13:40", stay: "20 分", place: "原宿 → 澀谷", tags: ["walk", "jr"], how: "步行約 15 分，或山手線 1 站", cost: "Suica 實扣" },
+        { start: "13:40", end: "16:30", stay: "2 小時 50 分", place: "澀谷", how: "十字路口、中心街、宮下公園", note: "SHIBUYA SKY 沒有訂位，今天不排。" },
+        { start: "16:30", end: "16:50", stay: "20 分", place: "澀谷 → 新宿", tags: ["jr"], how: "山手線 2 站約 7 分", cost: "Suica 實扣" },
+        { start: "16:50", end: "20:00", stay: "3 小時", place: "新宿 Lumine、Lumine Est、NEWoMan", must: true, note: "Lumine Est 偏少女。多半營業到 21:00 前後。" },
+        { start: "20:00", end: "21:00", stay: "1 小時", place: "晚餐（新宿）" },
+        { start: "21:00", end: "21:40", stay: "40 分", place: "回 The Barn Tokyo", tags: ["jr", "walk"], how: "山手線外迴，新宿到鶯谷約 23 分，北口步行 4 分", cost: "Suica 實扣" },
+      ],
+    },
+    {
+      date: "12/17", week: "四", title: "飯店 → 日暮里 → 成田 → 臺中",
+      sticker: "24_583194877.png",
+      items: [
+        { start: "08:00", end: "08:45", stay: "45 分", place: "飯店附近早餐" },
+        { start: "08:45", end: "09:20", stay: "35 分", place: "退房、把行李提出來", how: "飯店櫃檯", note: "最晚 11:00 可退，但 10:05 的車要 09:25 出門。" },
+        { start: "09:25", end: "09:45", stay: "20 分", place: "飯店 → 日暮里京成月台", tags: ["walk", "jr"], how: "鶯谷搭山手線內迴 1 站到日暮里，轉京成月台。直走約 12 分也可以。", cost: "Suica 實扣", note: "09:45 前站到月台。" },
+        { start: "10:05", end: "10:53", stay: "48 分", place: "日暮里 → 成田第 2 航廈", tags: ["skyliner"], how: "Skyliner 127 號，停青砥、新鎌ヶ谷", cost: "¥2,580／人", note: "平日時刻，指定席。若錯過，下一班 29 號 10:25 開、11:01 到。" },
+        { start: "10:53", end: "11:05", stay: "12 分", place: "Skyliner 車站 → 星宇櫃台", tags: ["walk"], how: "第 2 航廈內步行" },
+        { start: "11:05", end: "13:40", stay: "2 小時 35 分", place: "登機手續、安檢、免稅店", note: "安檢順的話約 11:45 進管制區，免稅店大約 1 小時 40 分。" },
+        { start: "14:25", end: "17:55", stay: "3 小時 30 分", place: "成田 → 臺中第 2 航廈", tags: ["plane"], how: "星宇 JX315", cost: "已含在機票", note: "回程坐右側，天氣好看得到富士山。" },
+      ],
+    },
+  ],
+
+  /* 可打勾清單：每一項可以是文字，或 { text: "...", must: true } 標重要 */
+  todo: [
+    { text: "買 12/14 迪士尼一日券（平日聖誕也會滿）", must: true },
+    { text: "買 Skyliner 指定席：12/13 去程 40 號、12/17 回程 127 號", must: true },
+    "確認 12/14 迪士尼開園時間（官方日曆）",
+    "買晴空塔展望台門票（約 15:30 時段）",
+    "淺草和服租借預約（可選，選晴空塔可歸還方案）",
+    "確認 Laforet、Lumine、NEWoMan 營業時間",
+    "星宇線上報到、確認兩端航廈",
+    "安排臺中落地後回家的交通",
+  ],
+
+  prep: [
+    { name: "證件與文件", items: [
+      { text: "護照（效期 6 個月以上）", must: true },
+      "填寫 Visit Japan Web，截圖 QR Code",
+      "電子機票、住宿確認信存到手機",
+      "旅遊平安險、不便險",
+    ]},
+    { name: "錢與交通", items: [
+      "換日幣現金",
+      "手機 Suica 開好、儲值",
+      "信用卡開通海外刷卡",
+    ]},
+    { name: "手機與網路", items: [
+      "買網卡／eSIM",
+      "下載 Google Maps 離線地圖",
+      "下載迪士尼 App、綁好門票",
+    ]},
+  ],
+
+  packing: [
+    { name: "隨身必帶", items: [
+      { text: "護照", must: true }, "手機", "錢包（日幣、台幣、信用卡）", "行動電源（只能放隨身）", "網卡／eSIM",
+    ]},
+    { name: "衣物（12 月東京約 3–12°C）", items: [
+      "保暖外套", "毛衣／帽T", "發熱衣", "圍巾、手套、毛帽", "好走的鞋", "睡衣、換洗衣物 4 套",
+    ]},
+    { name: "盥洗保養", items: [
+      "牙刷牙膏", "保養品", "護唇膏、護手霜（很乾燥）", "隱形眼鏡／眼鏡",
+    ]},
+    { name: "其他", items: [
+      "充電線、充電頭", "常備藥", "折疊傘", "購物袋（行李要留空間！）", "暖暖包", "口罩",
+    ]},
+  ],
+};
+</script>
+
+<style>
+:root{
+  --paper:#FFFCF6;
+  --ink:#3E3A39;
+  --ink-soft:#7A7471;
+  --coral:#F2A497;
+  --yellow:#F6D27A;
+  --water:#A8D3E6;
+  --green:#B9DAA5;
+  --line:3px solid var(--ink);
+  --r-lg:28px;
+  --r-md:20px;
+  --r-sm:12px;
+  --shadow:4px 4px 0 var(--ink);
+  --nav-h:60px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:"Huninn","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  line-height:1.6;
+  font-size:16px;
+  padding-top:var(--nav-h);
+}
+img{display:block;max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+
+/* ---------- 頂端選單 ---------- */
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:50;height:var(--nav-h);
+  background:var(--paper);border-bottom:var(--line);
+  display:flex;align-items:center;gap:8px;padding:0 10px;
+}
+.nav-links{
+  display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;padding:4px 2px;
+}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{
+  flex:none;text-decoration:none;font-size:15px;
+  padding:5px 13px;border:2.5px solid transparent;border-radius:999px;
+  transition:background .2s,border-color .2s;
+}
+.nav-links a.active{background:var(--yellow);border-color:var(--ink)}
+.motion-btn{
+  flex:none;width:40px;height:40px;border:2.5px solid var(--ink);border-radius:50%;
+  background:var(--paper);font-size:17px;display:grid;place-items:center;
+}
+.motion-btn[aria-pressed="true"]{background:var(--water)}
+
+/* ---------- 共用 ---------- */
+main{max-width:640px;margin:0 auto;padding:0 16px 40px}
+section{padding-top:36px;scroll-margin-top:calc(var(--nav-h) + 4px)}
+.sec-title{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+}
+.sec-title h2{
+  font-size:22px;font-weight:normal;
+  background:var(--sec-color,var(--yellow));border:var(--line);border-radius:999px;
+  padding:4px 18px;
+}
+.sec-title img{width:84px;height:84px;object-fit:contain;margin:-14px 0 -14px auto}
+.card{
+  background:var(--paper);border:var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow);padding:18px;
+}
+.muted{color:var(--ink-soft);font-size:14px}
+.sticker{animation:bob 3.6s ease-in-out infinite;transform-origin:50% 90%}
+.sticker.d1{animation-delay:-.9s}
+.sticker.d2{animation-delay:-1.8s}
+.sticker.d3{animation-delay:-2.7s}
+
+/* ---------- 首頁 ---------- */
+.hero{text-align:center;padding-top:20px}
+.hero-art{position:relative;width:240px;height:220px;margin:0 auto 4px}
+.hero-art .main{position:absolute;left:50%;bottom:0;width:200px;margin-left:-100px}
+.hero-art .balloon{position:absolute;right:-34px;top:-14px;width:130px}
+.hero-art .dot{position:absolute;border:var(--line);border-radius:50%}
+.hero-art .dot.a{width:26px;height:26px;background:var(--coral);left:6px;top:40px}
+.hero-art .dot.b{width:16px;height:16px;background:var(--water);left:34px;top:12px}
+.hero-art .dot.c{width:18px;height:18px;background:var(--green);right:6px;bottom:36px}
+.hero h1{font-size:34px;font-weight:normal;letter-spacing:2px;line-height:1.3}
+.hero .sub{font-size:17px;margin-top:4px}
+.hero .date-pill{
+  display:inline-block;margin-top:12px;padding:4px 16px;
+  border:var(--line);border-radius:999px;background:var(--water);font-size:15px;
+}
+.countdown{margin-top:22px;padding:18px 14px}
+.countdown .label{font-size:15px;margin-bottom:10px}
+.cd-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cd-box{border:var(--line);border-radius:var(--r-md);padding:8px 0 6px}
+.cd-box b{display:block;font-size:30px;font-weight:normal;line-height:1.2;font-variant-numeric:tabular-nums}
+.cd-box span{font-size:13px}
+.cd-box:nth-child(1){background:var(--coral)}
+.cd-box:nth-child(2){background:var(--yellow)}
+.cd-box:nth-child(3){background:var(--water)}
+.cd-box:nth-child(4){background:var(--green)}
+.cd-msg{font-size:20px;padding:10px 0}
+
+/* ---------- 航班 ---------- */
+.flights{display:grid;gap:16px}
+.flight{padding:0;overflow:hidden}
+.flight-top{
+  display:flex;align-items:center;gap:8px;padding:10px 16px;
+  border-bottom:var(--line);background:var(--fc);
+}
+.flight-top .tag{background:var(--paper);border:2.5px solid var(--ink);border-radius:999px;padding:0 12px;font-size:14px}
+.flight-top .no{margin-left:auto;font-size:18px}
+.flight-body{padding:16px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;text-align:center}
+.flight-body .code{font-size:30px;line-height:1.1;letter-spacing:1px}
+.flight-body .time{font-size:20px}
+.flight-path{display:flex;flex-direction:column;align-items:center;font-size:13px;color:var(--ink-soft);min-width:86px}
+.flight-path .plane{font-size:22px;line-height:1}
+.flight-path .bar{width:100%;border-top:3px dashed var(--ink);margin:6px 0}
+.flight-foot{padding:0 16px 14px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-block;border:2px solid var(--ink);border-radius:999px;padding:1px 10px;font-size:13px;background:var(--paper)}
+.price-line{margin-top:14px;text-align:center}
+
+/* ---------- 每日行程 ---------- */
+.day-tabs{
+  position:sticky;top:var(--nav-h);z-index:20;background:var(--paper);
+  display:flex;gap:6px;overflow-x:auto;padding:10px 2px 12px;margin:0 -2px;scrollbar-width:none;
+}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{
+  flex:1 0 auto;min-width:58px;border:var(--line);border-radius:var(--r-md);
+  background:var(--paper);padding:6px 4px;line-height:1.25;text-align:center;
+  transition:background .2s,transform .2s;
+}
+.day-tab small{display:block;font-size:12px;color:var(--ink-soft)}
+.day-tab b{font-weight:normal;font-size:17px}
+.day-tab.active{background:var(--coral);box-shadow:3px 3px 0 var(--ink);animation:tab-pop .45s cubic-bezier(.34,1.8,.64,1)}
+.day-tab.active small{color:var(--ink)}
+
+.day-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;background:var(--yellow)}
+.day-head img{width:84px;height:84px;object-fit:contain;flex:none}
+.day-head .n{font-size:14px}
+.day-head h3{font-size:20px;font-weight:normal;line-height:1.35}
+.day-head .musts{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+
+.tl{position:relative;display:grid;gap:12px}
+.tl::before{content:"";position:absolute;left:66px;top:8px;bottom:8px;border-left:3px dashed var(--ink);opacity:.45}
+.tl-item{display:grid;grid-template-columns:52px 1fr;column-gap:30px;position:relative}
+.tl-time{text-align:right;font-variant-numeric:tabular-nums;line-height:1.25;padding-top:12px}
+.tl-time b{display:block;font-weight:normal;font-size:16px}
+.tl-time span{font-size:12px;color:var(--ink-soft)}
+.tl-dot{
+  position:absolute;left:58px;top:14px;width:19px;height:19px;border-radius:50%;
+  border:var(--line);background:var(--paper);
+}
+.tl-item.act .tl-dot{background:var(--green)}
+.tl-item.act.must .tl-dot{background:var(--coral)}
+.tl-card{border:var(--line);border-radius:var(--r-md);padding:12px 14px;background:var(--paper)}
+.tl-item.must .tl-card{box-shadow:var(--shadow)}
+.tl-head{display:flex;align-items:flex-start;gap:8px}
+.tl-head h4{font-size:17px;font-weight:normal;line-height:1.4;flex:1}
+.badge{flex:none;font-size:13px;border:2.5px solid var(--ink);border-radius:999px;padding:0 9px;line-height:1.6}
+.badge.must{background:var(--coral);transform:rotate(-4deg)}
+.badge.opt{background:var(--paper);border-style:dashed}
+.tl-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tl-how{font-size:14px;color:var(--ink-soft);margin-top:6px}
+.tl-note{font-size:14px;margin-top:8px;padding:6px 10px;border-radius:var(--r-sm);background:#FCF1D3}
+.tl-note::before{content:"📝 "}
+
+/* 交通段：比較小、虛線框 */
+.tl-item.move .tl-card{border-style:dashed;border-width:2.5px;padding:8px 12px}
+.tl-item.move .tl-dot{width:13px;height:13px;left:61px;top:17px;border-width:2.5px}
+.tl-item.move h4{font-size:15px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
+.ttag{font-size:13px;border:2px solid var(--ink);border-radius:999px;padding:0 9px;line-height:1.65;white-space:nowrap}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px;justify-content:center}
+
+/* 切換日期時的彈跳 */
+.day-panel.bounce .day-head{animation:pop .55s cubic-bezier(.34,1.6,.64,1) both}
+.day-panel.bounce .tl-item{animation:pop .5s cubic-bezier(.34,1.6,.64,1) both;animation-delay:calc(var(--i) * 45ms + 80ms)}
+
+/* ---------- 待辦／住宿 ---------- */
+.two-col{display:grid;gap:0}
+.check-card{padding:14px 16px}
+.progress{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:14px}
+.progress .bar{flex:1;height:14px;border:2.5px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--paper)}
+.progress .bar i{display:block;height:100%;background:var(--green);border-right:2.5px solid var(--ink);transition:width .35s}
+.progress .bar i[style="width:0%"]{border-right:none}
+.check-group + .check-group{margin-top:14px}
+.check-group h3{font-size:16px;font-weight:normal;margin-bottom:4px;display:inline-block;padding:0 10px;border-radius:999px;background:var(--gc,var(--water))}
+.check-list{list-style:none}
+.check-list label{
+  display:flex;align-items:flex-start;gap:10px;padding:8px 2px;cursor:pointer;
+  border-bottom:2px dotted #D9D3CC;
+}
+.check-list li:last-child label{border-bottom:none}
+.check-list input{position:absolute;opacity:0;pointer-events:none}
+.box{
+  flex:none;width:24px;height:24px;margin-top:1px;border:var(--line);border-radius:8px;background:var(--paper);
+  display:grid;place-items:center;font-size:15px;line-height:1;transition:background .2s,transform .2s;
+}
+.check-list input:checked + .box{background:var(--green)}
+.check-list input:checked + .box::after{content:"✓";font-weight:bold}
+.check-list input:focus-visible + .box{outline:3px solid var(--water);outline-offset:2px}
+.check-list input:checked ~ .txt{text-decoration:line-through;text-decoration-thickness:2px;color:var(--ink-soft)}
+.check-list .txt .imp{font-size:12px;background:var(--coral);border:2px solid var(--ink);border-radius:999px;padding:0 6px;margin-left:4px;white-space:nowrap}
+.reset-btn{display:block;margin:12px 0 0 auto;font-size:13px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);padding:2px 12px}
+
+.hotel{padding:0;overflow:hidden}
+.hotel-top{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--water);border-bottom:var(--line)}
+.hotel-top img{width:80px;height:80px;object-fit:contain;flex:none}
+.hotel-top h3{font-size:22px;font-weight:normal;line-height:1.3}
+.hotel-dates{display:grid;grid-template-columns:1fr 1fr;border-bottom:var(--line)}
+.hotel-dates div{padding:12px;text-align:center}
+.hotel-dates div + div{border-left:var(--line)}
+.hotel-dates b{display:block;font-weight:normal;font-size:20px}
+.hotel-info{padding:12px 16px;display:grid;gap:8px;font-size:15px}
+.hotel-info .row{display:flex;gap:10px}
+.hotel-info .row > span:first-child{flex:none;width:22px;text-align:center}
+.hotel-btns{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 16px}
+.btn{
+  text-decoration:none;border:2.5px solid var(--ink);border-radius:999px;padding:5px 14px;font-size:14px;
+  background:var(--paper);box-shadow:2px 2px 0 var(--ink);transition:transform .15s,box-shadow .15s;
+}
+.btn:active{transform:translate(2px,2px);box-shadow:none}
+.btn.y{background:var(--yellow)}
+
+/* ---------- 頁尾 ---------- */
+footer{text-align:center;padding:30px 16px 50px}
+footer img{width:110px;margin:0 auto 6px}
+
+/* ---------- 動畫 ---------- */
+@keyframes bob{
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-6px) rotate(2deg)}
+}
+@keyframes pop{
+  0%{opacity:0;transform:translateY(18px) scale(.94)}
+  60%{opacity:1;transform:translateY(-4px) scale(1.02)}
+  100%{opacity:1;transform:none}
+}
+@keyframes tab-pop{
+  0%{transform:scale(.88)}
+  60%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
+
+/* 減少動態效果：系統設定 或 右上角按鈕 */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+html.reduce-motion{scroll-behavior:auto}
+html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{animation:none!important;transition:none!important}
+
+/* ---------- 大螢幕 ---------- */
+@media (min-width:860px){
+  main{max-width:920px}
+  .nav{justify-content:center}
+  .nav-links{flex:none}
+  .flights{grid-template-columns:1fr 1fr}
+  .two-col{grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  .days-wrap{max-width:680px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="頁面選單">
+  <div class="nav-links" id="navLinks">
+    <a href="#home">首頁</a>
+    <a href="#flight">航班</a>
+    <a href="#days">每日行程</a>
+    <a href="#todo">待辦</a>
+    <a href="#hotel">住宿</a>
+    <a href="#prep">出發前</a>
+    <a href="#pack">行李</a>
+  </div>
+  <button class="motion-btn" id="motionBtn" type="button" aria-pressed="false" title="減少動態效果">🐢</button>
+</nav>
+
+<main>
+  <!-- 首頁 -->
+  <section id="home" class="hero">
+    <div class="hero-art" aria-hidden="true">
+      <span class="dot a"></span><span class="dot b"></span><span class="dot c"></span>
+      <img class="main sticker" src="travelsticker/22_583194875.png" alt="">
+      <img class="balloon sticker d2" src="travelsticker/10_691386586.png" alt="">
+    </div>
+    <h1 id="tripTitle"></h1>
+    <p class="sub" id="tripSub"></p>
+    <span class="date-pill" id="tripDate"></span>
+    <div class="card countdown" id="countdown" aria-live="polite"></div>
+  </section>
+
+  <!-- 航班 -->
+  <section id="flight">
+    <div class="sec-title" style="--sec-color:var(--water)">
+      <h2>✈️ 航班</h2>
+      <img class="sticker d1" src="travelsticker/23_691386599.png" alt="">
+    </div>
+    <div class="flights" id="flightList"></div>
+    <p class="price-line"><span class="chip" id="flightPrice"></span></p>
+  </section>
+
+  <!-- 每日行程 -->
+  <section id="days">
+    <div class="days-wrap">
+      <div class="sec-title" style="--sec-color:var(--coral)">
+        <h2>🗓️ 每日行程</h2>
+        <img class="sticker d3" src="travelsticker/02_691386578.png" alt="">
+      </div>
+      <div class="day-tabs" id="dayTabs" role="tablist" aria-label="選擇日期"></div>
+      <div class="day-panel" id="dayPanel" role="tabpanel"></div>
+      <div class="legend" id="legend" aria-label="交通標籤說明"></div>
+    </div>
+  </section>
+
+  <div class="two-col">
+    <!-- 待辦 -->
+    <section id="todo">
+      <div class="sec-title" style="--sec-color:var(--yellow)">
+        <h2>✅ 待辦清單</h2>
+        <img class="sticker d2" src="travelsticker/11_691386587.png" alt="">
+      </div>
+      <div class="card check-card" id="todoList"></div>
+    </section>
+
+    <!-- 住宿 -->
+    <section id="hotel">
+      <div class="sec-title" style="--sec-color:var(--water)">
+        <h2>🏠 住宿資訊</h2>
+      </div>
+      <div class="card hotel" id="hotelCard"></div>
+    </section>
+  </div>
+
+  <div class="two-col">
+    <!-- 出發前 -->
+    <section id="prep">
+      <div class="sec-title" style="--sec-color:var(--green)">
+        <h2>📋 出發前清單</h2>
+        <img class="sticker d1" src="travelsticker/12_691386588.png" alt="">
+      </div>
+      <div class="card check-card" id="prepList"></div>
+    </section>
+
+    <!-- 行李 -->
+    <section id="pack">
+      <div class="sec-title" style="--sec-color:var(--coral)">
+        <h2>🧳 行李清單</h2>
+        <img class="sticker d3" src="travelsticker/main.png" alt="">
+      </div>
+      <div class="card check-card" id="packList"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <img class="sticker" src="travelsticker/07_829258319.png" alt="">
+  <p class="muted">一路順風，玩得開心！</p>
+</footer>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s = "") => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const STICKER_DIR = "travelsticker/";
+
+  /* ---------- 減少動態效果 ---------- */
+  const motionBtn = $("#motionBtn");
+  const setMotion = (reduce) => {
+    document.documentElement.classList.toggle("reduce-motion", reduce);
+    motionBtn.setAttribute("aria-pressed", reduce);
+    motionBtn.title = reduce ? "已減少動態效果（點一下恢復）" : "減少動態效果";
+  };
+  setMotion(localStorage.getItem("trip-reduce-motion") === "1");
+  motionBtn.addEventListener("click", () => {
+    const reduce = !document.documentElement.classList.contains("reduce-motion");
+    localStorage.setItem("trip-reduce-motion", reduce ? "1" : "0");
+    setMotion(reduce);
+  });
+
+  /* ---------- 首頁 ---------- */
+  $("#tripTitle").textContent = TRIP.title;
+  $("#tripSub").textContent = TRIP.subtitle;
+  $("#tripDate").textContent = TRIP.dateText;
+
+  const cdEl = $("#countdown");
+  const depart = new Date(TRIP.departAt).getTime();
+  const ret = new Date(TRIP.returnAt).getTime();
+  const pad = (n) => String(n).padStart(2, "0");
+  let cdBuilt = false;
+  function tick() {
+    const now = Date.now();
+    if (now >= ret) { cdEl.innerHTML = `<p class="cd-msg">旅程結束，歡迎回家 🏡</p>`; return; }
+    if (now >= depart) { cdEl.innerHTML = `<p class="cd-msg">旅行中！好好玩 🎉</p>`; return; }
+    const s = Math.floor((depart - now) / 1000);
+    const parts = [Math.floor(s / 86400), pad(Math.floor(s / 3600) % 24), pad(Math.floor(s / 60) % 60), pad(s % 60)];
+    if (!cdBuilt) {
+      cdEl.innerHTML = `<p class="label">距離出發還有</p><div class="cd-grid">` +
+        ["天", "時", "分", "秒"].map((u) => `<div class="cd-box"><b></b><span>${u}</span></div>`).join("") + `</div>`;
+      cdBuilt = true;
+    }
+    cdEl.querySelectorAll(".cd-box b").forEach((b, i) => { b.textContent = parts[i]; });
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ---------- 航班 ---------- */
+  $("#flightList").innerHTML = TRIP.flights.map((f) => `
+    <article class="card flight" style="--fc:${f.color}">
+      <div class="flight-top">
+        <span class="tag">${esc(f.label)}</span>
+        <span>${esc(f.date)}</span>
+        <span class="no">${esc(f.no)}</span>
+      </div>
+      <div class="flight-body">
+        <div>
+          <div class="code">${esc(f.from.code)}</div>
+          <div>${esc(f.from.city)}</div>
+          <div class="time">${esc(f.from.time)}</div>
+        </div>
+        <div class="flight-path">
+          <span class="plane">✈️</span>
+          <span class="bar"></span>
+          <span>${esc(f.duration)}</span>
+        </div>
+        <div>
+          <div class="code">${esc(f.to.code)}</div>
+          <div>${esc(f.to.city)}</div>
+          <div class="time">${esc(f.to.time)}</div>
+        </div>
+      </div>
+      <div class="flight-foot">
+        <span class="chip">${esc(f.airline)}${f.aircraft ? "・" + esc(f.aircraft) : ""}</span>
+        <span class="chip">${esc(f.from.terminal)} → ${esc(f.to.terminal)}</span>
+        ${f.seat ? `<span class="chip">💺 ${esc(f.seat)}</span>` : ""}
+      </div>
+    </article>`).join("");
+  $("#flightPrice").textContent = "💰 " + TRIP.flightPrice;
+
+  /* ---------- 每日行程 ---------- */
+  const tabsEl = $("#dayTabs");
+  const panelEl = $("#dayPanel");
+
+  const tagHTML = (key) => {
+    const t = TAGS[key] || { label: key, icon: "", color: "#FFFCF6" };
+    return `<span class="ttag" style="background:${t.color}">${t.icon} ${esc(t.label)}</span>`;
+  };
+
+  function itemHTML(it, i) {
+    const isMove = Array.isArray(it.tags) && it.tags.length > 0;
+    const cls = ["tl-item", isMove ? "move" : "act", it.must ? "must" : ""].join(" ");
+    const meta = [it.stay && `<span class="chip">⏱ ${esc(it.stay)}</span>`, it.cost && `<span class="chip">💴 ${esc(it.cost)}</span>`].filter(Boolean).join("");
+    return `
+      <div class="${cls}" style="--i:${i}">
+        <div class="tl-time"><b>${esc(it.start)}</b>${it.end ? `<span>${esc(it.end)}</span>` : ""}</div>
+        <span class="tl-dot" aria-hidden="true"></span>
+        <div class="tl-card">
+          ${isMove ? `<div class="tags">${it.tags.map(tagHTML).join("")}</div>` : ""}
+          <div class="tl-head">
+            <h4>${esc(it.place)}</h4>
+            ${it.must ? `<span class="badge must">必去</span>` : ""}
+            ${it.optional ? `<span class="badge opt">可選</span>` : ""}
+          </div>
+          ${it.how ? `<p class="tl-how">${esc(it.how)}</p>` : ""}
+          ${meta ? `<div class="tl-meta">${meta}</div>` : ""}
+          ${it.note ? `<p class="tl-note">${esc(it.note)}</p>` : ""}
+        </div>
+      </div>`;
+  }
+
+  function renderDay(idx, animate) {
+    const d = TRIP.days[idx];
+    tabsEl.querySelectorAll(".day-tab").forEach((t, i) => {
+      t.classList.toggle("active", i === idx);
+      t.setAttribute("aria-selected", i === idx);
+      t.tabIndex = i === idx ? 0 : -1;
+    });
+    const musts = d.items.filter((it) => it.must).map((it) => `<span class="chip" style="background:var(--paper)">⭐ ${esc(it.place)}</span>`).join("");
+    panelEl.innerHTML = `
+      <div class="card day-head">
+        <img class="sticker" src="${STICKER_DIR}${esc(d.sticker)}" alt="">
+        <div>
+          <p class="n">Day ${idx + 1}・${esc(d.date)}（${esc(d.week)}）</p>
+          <h3>${esc(d.title)}</h3>
+          ${musts ? `<div class="musts">${musts}</div>` : ""}
+        </div>
+      </div>
+      <div class="tl">${d.items.map(itemHTML).join("")}</div>`;
+    panelEl.setAttribute("aria-labelledby", "day-tab-" + idx);
+    if (animate) {
+      panelEl.classList.remove("bounce");
+      void panelEl.offsetWidth;
+      panelEl.classList.add("bounce");
+    }
+  }
+
+  tabsEl.innerHTML = TRIP.days.map((d, i) => `
+    <button class="day-tab" id="day-tab-${i}" role="tab" type="button" data-i="${i}">
+      <small>Day ${i + 1}</small><b>${esc(d.date)}</b><small>（${esc(d.week)}）</small>
+    </button>`).join("");
+
+  tabsEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".day-tab");
+    if (!btn) return;
+    renderDay(+btn.dataset.i, true);
+    btn.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+    const top = $("#days").getBoundingClientRect().top;
+    if (top < 0) tabsEl.scrollIntoView({ block: "start" });
+  });
+  tabsEl.addEventListener("keydown", (e) => {
+    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    const cur = +tabsEl.querySelector(".day-tab.active").dataset.i;
+    const next = (cur + (e.key === "ArrowRight" ? 1 : -1) + TRIP.days.length) % TRIP.days.length;
+    renderDay(next, true);
+    tabsEl.children[next].focus();
+  });
+
+  // 旅行期間自動打開當天
+  const todayStr = `${new Date().getMonth() + 1}/${new Date().getDate()}`;
+  const todayIdx = TRIP.days.findIndex((d) => d.date === todayStr);
+  renderDay(todayIdx >= 0 ? todayIdx : 0, false);
+
+  const usedTags = [...new Set(TRIP.days.flatMap((d) => d.items.flatMap((it) => it.tags || [])))];
+  $("#legend").innerHTML = usedTags.map(tagHTML).join("") + `<span class="badge must">必去</span>`;
+
+  /* ---------- 住宿 ---------- */
+  const h = TRIP.hotel;
+  $("#hotelCard").innerHTML = `
+    <div class="hotel-top">
+      <img class="sticker d1" src="${STICKER_DIR}20_787765188.png" alt="">
+      <div><h3>${esc(h.name)}</h3><p class="muted" style="color:var(--ink)">${esc(h.nights)}</p></div>
+    </div>
+    <div class="hotel-dates">
+      <div><span class="muted">入住 ${esc(h.checkIn.date)}</span><b>${esc(h.checkIn.time)}</b></div>
+      <div><span class="muted">退房 ${esc(h.checkOut.date)}</span><b>${esc(h.checkOut.time)}</b></div>
+    </div>
+    <div class="hotel-info">
+      <div class="row"><span>📍</span><span>${esc(h.addressZh)}<br><span class="muted">${esc(h.address)}</span></span></div>
+      <div class="row"><span>🚉</span><span>${esc(h.station)}</span></div>
+      <div class="row"><span>📞</span><span>${esc(h.phone)}</span></div>
+      <div class="row"><span>💰</span><span>${esc(h.price)}<br><span class="muted">${esc(TRIP.totalCost)}</span></span></div>
+    </div>
+    <div class="hotel-btns">
+      <a class="btn y" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + " " + h.address)}" target="_blank" rel="noopener">🗺️ 開地圖</a>
+      <a class="btn" href="tel:${esc(h.phone)}">📞 打電話</a>
+      <a class="btn" href="${esc(h.website)}" target="_blank" rel="noopener">🌐 官網</a>
+    </div>`;
+
+  /* ---------- 可打勾清單（勾選狀態存在瀏覽器） ---------- */
+  const STORE_KEY = "tokyo-2026-12-checks";
+  const checks = JSON.parse(localStorage.getItem(STORE_KEY) || "{}");
+  const save = () => localStorage.setItem(STORE_KEY, JSON.stringify(checks));
+  const groupColors = ["var(--water)", "var(--yellow)", "var(--green)", "var(--coral)"];
+
+  function renderChecklist(el, listId, groups) {
+    const norm = (it) => (typeof it === "string" ? { text: it } : it);
+    const allIds = [];
+    const body = groups.map((g, gi) => {
+      const lis = g.items.map(norm).map((it) => {
+        const id = `${listId}::${it.text}`;
+        allIds.push(id);
+        return `<li><label>
+          <input type="checkbox" data-id="${esc(id)}" ${checks[id] ? "checked" : ""}>
+          <span class="box" aria-hidden="true"></span>
+          <span class="txt">${esc(it.text)}${it.must ? `<span class="imp">重要</span>` : ""}</span>
+        </label></li>`;
+      }).join("");
+      return `<div class="check-group">${g.name ? `<h3 style="--gc:${groupColors[gi % 4]}">${esc(g.name)}</h3>` : ""}<ul class="check-list">${lis}</ul></div>`;
+    }).join("");
+    el.innerHTML = `<div class="progress"><span class="bar"><i></i></span><span class="count"></span></div>${body}
+      <button class="reset-btn" type="button">全部取消</button>`;
+
+    const update = () => {
+      const done = allIds.filter((id) => checks[id]).length;
+      const pct = allIds.length ? Math.round((done / allIds.length) * 100) : 0;
+      el.querySelector(".progress i").style.width = pct + "%";
+      el.querySelector(".count").textContent = `${done} / ${allIds.length}${done === allIds.length ? " 🎉" : ""}`;
+    };
+    el.addEventListener("change", (e) => {
+      if (!e.target.dataset.id) return;
+      if (e.target.checked) checks[e.target.dataset.id] = 1; else delete checks[e.target.dataset.id];
+      save(); update();
+    });
+    el.querySelector(".reset-btn").addEventListener("click", () => {
+      if (!confirm("確定要取消這張清單的所有勾選嗎？")) return;
+      allIds.forEach((id) => delete checks[id]);
+      el.querySelectorAll("input[type=checkbox]").forEach((c) => { c.checked = false; });
+      save(); update();
+    });
+    update();
+  }
+
+  renderChecklist($("#todoList"), "todo", [{ name: "", items: TRIP.todo }]);
+  renderChecklist($("#prepList"), "prep", TRIP.prep);
+  renderChecklist($("#packList"), "pack", TRIP.packing);
+
+  /* ---------- 選單目前位置 ---------- */
+  const links = [...document.querySelectorAll("#navLinks a")];
+  const sections = links.map((a) => document.querySelector(a.getAttribute("href")));
+  function onScroll() {
+    const y = window.scrollY + 120;
+    let cur = 0;
+    sections.forEach((s, i) => { if (s.offsetTop <= y) cur = i; });
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) cur = sections.length - 1;
+    links.forEach((a, i) => {
+      const on = i === cur;
+      if (on && !a.classList.contains("active")) a.scrollIntoView({ block: "nearest", inline: "nearest" });
+      a.classList.toggle("active", on);
+    });
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
